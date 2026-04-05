@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>直播合规课程 | 商业盈利预测模型</title>
+    <!-- 引入 TailwindCSS + Font Awesome + Chart.js -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* 自定义滑块样式和微调 */
+        input[type="range"] {
+            -webkit-appearance: none;
+            background: #e2e8f0;
+            height: 4px;
+            border-radius: 5px;
+        }
+        input[type="range"]:focus {
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .card-hover {
+            transition: all 0.2s ease;
+        }
+        .number-input {
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            padding: 0.4rem 0.6rem;
+            width: 100%;
+            text-align: center;
+            font-weight: 500;
+        }
+        .profit-positive {
+            color: #10b981;
+        }
+        .profit-negative {
+            color: #ef4444;
+        }
+        .insight-badge {
+            background: #f1f5f9;
+            border-radius: 9999px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 font-sans antialiased">
+
+    <div class="max-w-7xl mx-auto px-4 py-6 md:py-10">
+        <!-- 标题与描述 -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-800 rounded-full px-4 py-1 text-sm font-semibold mb-3">
+                <i class="fas fa-gavel"></i> 合规经营 · 安全赚钱
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 tracking-tight">直播合规课程 <span class="text-blue-600">商业盈利预测模型</span></h1>
+            <p class="text-slate-500 mt-2 max-w-2xl mx-auto">从草根到正规军 | 动态测算获客成本、合规杂费、税负及盈亏平衡点</p>
+        </div>
+
+        <!-- 主区域: 左侧参数面板 / 右侧核心指标+图表 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- 左侧控制区 (参数输入) -->
+            <div class="lg:col-span-1 space-y-5">
+                <div class="bg-white rounded-2xl shadow-md p-5 border border-slate-100">
+                    <h2 class="text-lg font-bold flex items-center gap-2 border-b pb-2 mb-4"><i class="fas fa-sliders-h text-blue-500"></i> 营收参数</h2>
+                    <div class="space-y-4">
+                        <!-- 课程单价 -->
+                        <div>
+                            <label class="flex justify-between text-sm font-medium text-slate-700"><span><i class="fas fa-tag text-blue-400 mr-1"></i> 课程单价 (元/份)</span><span id="priceVal" class="font-mono text-blue-600">399</span></label>
+                            <input type="range" id="coursePrice" min="99" max="1499" step="10" value="399" class="w-full mt-1">
+                            <input type="number" id="priceNum" value="399" step="10" class="number-input mt-1 text-sm">
+                        </div>
+                        <!-- 每月固定运营杂费 (含法律顾问/平台/水电等) -->
+                        <div>
+                            <label class="flex justify-between text-sm font-medium text-slate-700"><span><i class="fas fa-building text-slate-500"></i> 固定运营成本 (元/月)</span><span id="fixedCostVal" class="font-mono">5000</span></label>
+                            <input type="range" id="fixedCost" min="1000" max="20000" step="200" value="5000" class="w-full mt-1">
+                            <input type="number" id="fixedNum" value="5000" step="200" class="number-input mt-1 text-sm">
+                            <div class="text-xs text-slate-400 mt-1 flex flex-wrap gap-2">
+                                <span><i class="fas fa-server"></i> 平台年费</span>
+                                <span><i class="fas fa-balance-scale"></i> 法律顾问</span>
+                                <span><i class="fas fa-charging-station"></i> 水电杂费</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-md p-5 border border-slate-100">
+                    <h2 class="text-lg font-bold flex items-center gap-2 border-b pb-2 mb-4"><i class="fas fa-chart-line text-green-600"></i> 获客组合策略</h2>
+                    <div class="space-y-4">
+                        <!-- 付费广告单客成本 (CPA) -->
+                        <div>
+                            <label class="flex justify-between text-sm font-medium"><span><i class="fas fa-ad"></i> 付费广告单客成本 (元/成交)</span><span id="cpaVal" class="font-mono">50</span></label>
+                            <input type="range" id="cpa" min="10" max="500" step="5" value="50" class="w-full">
+                            <input type="number" id="cpaNum" value="50" step="5" class="number-input mt-1">
+                            <div class="text-xs text-slate-400 mt-1">抖音/信息流 · 每个付费学员广告支出</div>
+                        </div>
+                        <!-- 每月广告预算上限 -->
+                        <div>
+                            <label class="flex justify-between text-sm font-medium"><span><i class="fas fa-dollar-sign"></i> 月广告预算上限 (元)</span><span id="adBudgetVal" class="font-mono">3000</span></label>
+                            <input type="range" id="adBudget" min="0" max="20000" step="200" value="3000" class="w-full">
+                            <input type="number" id="adBudgetNum" value="3000" step="200" class="number-input mt-1">
+                        </div>
+                        <!-- 自然流量月均成交客户数 (内容/转介绍) -->
+                        <div>
+                            <label class="flex justify-between text-sm font-medium"><span><i class="fas fa-users"></i> 自然流量成交 (人/月)</span><span id="organicVal" class="font-mono">15</span></label>
+                            <input type="range" id="organic" min="0" max="100" step="1" value="15" class="w-full">
+                            <input type="number" id="organicNum" value="15" step="1" class="number-input mt-1">
+                            <div class="text-xs text-slate-400">免费内容/私域/转介绍，零广告成本</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-md p-5 border border-slate-100">
+                    <h2 class="text-lg font-bold flex items-center gap-2 border-b pb-2 mb-4"><i class="fas fa-calculator text-amber-600"></i> 税费&手续费</h2>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="flex justify-between text-sm font-medium"><span><i class="fas fa-percent"></i> 平台交易手续费率</span><span id="feeRateVal" class="font-mono">0.6%</span></label>
+                            <input type="range" id="txnFee" min="0" max="3" step="0.1" value="0.6" class="w-full">
+                            <div class="text-xs text-slate-400">知识付费SaaS抽成 (例: 0.2%~2%)</div>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl text-sm">
+                            <div class="flex justify-between"><span>📋 增值税 (小规模纳税人):</span><span id="vatDisplay" class="font-mono">0 元</span></div>
+                            <div class="flex justify-between mt-1"><span>🏢 企业所得税 (5%优惠税率):</span><span id="citDisplay" class="font-mono">0 元</span></div>
+                            <div class="text-xs text-slate-500 mt-2 border-t pt-1">*月收入≤10万免征增值税；超过部分按1%征收。企业所得税按利润×5% (小微企业优惠)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-blue-50 rounded-xl p-3 text-xs text-blue-800 border border-blue-200">
+                    <i class="fas fa-lightbulb"></i> <strong>合规小贴士：</strong> 固定成本已包含法律顾问/平台年费等“正规军”要素。建议结合内容获客降低综合获客成本，安全边际更高。
+                </div>
+            </div>
+
+            <!-- 右侧：指标看板 + 图表 -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- KPI 卡片 -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-2xl shadow-md p-4 border-l-8 border-l-blue-500">
+                        <div class="text-sm text-slate-500">预计月销量</div>
+                        <div class="text-3xl font-bold" id="totalSales">0<span class="text-lg font-normal text-slate-400"> 份</span></div>
+                        <div class="text-xs text-slate-400 mt-1"><span id="paidSales">0</span> 广告客户 + <span id="organicSales">0</span> 自然客户</div>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-md p-4 border-l-8 border-l-emerald-500">
+                        <div class="text-sm text-slate-500">月度总收入</div>
+                        <div class="text-3xl font-bold" id="totalRevenue">¥0</div>
+                        <div class="text-xs text-slate-400">课程单价 × 总销量</div>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-md p-4 border-l-8 border-l-amber-400">
+                        <div class="text-sm text-slate-500">月度净利润 (税后)</div>
+                        <div class="text-3xl font-bold" id="netProfit">¥0</div>
+                        <div class="text-xs" id="profitTrend"></div>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-md p-4 border-l-8 border-l-purple-500">
+                        <div class="text-sm text-slate-500">投资回报率 (ROI)</div>
+                        <div class="text-3xl font-bold" id="roi">0%</div>
+                        <div class="text-xs text-slate-400">净利润 ÷ 广告总支出*100%</div>
+                    </div>
+                </div>
+
+                <!-- 盈亏平衡与安全边际 -->
+                <div class="bg-white rounded-2xl shadow-md p-5">
+                    <h3 class="font-bold flex items-center gap-2 mb-3"><i class="fas fa-balance-scale text-indigo-500"></i> 盈亏平衡分析</h3>
+                    <div class="grid grid-cols-2 gap-3 text-center">
+                        <div class="bg-slate-50 p-3 rounded-xl">
+                            <div class="text-xs text-slate-500">📊 盈亏平衡销量 (保本)</div>
+                            <div class="text-2xl font-bold text-indigo-700" id="breakevenUnits">0<span class="text-sm font-normal"> 份</span></div>
+                            <div class="text-xs" id="safetyMarginDesc">安全边际率: -</div>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl">
+                            <div class="text-xs text-slate-500">🎯 当前销量 vs 保本点</div>
+                            <div class="text-2xl font-bold" id="statusDiff">—</div>
+                            <div class="text-xs" id="diffHint"></div>
+                        </div>
+                    </div>
+                    <div class="mt-3 text-sm bg-gray-50 p-2 rounded-lg">
+                        <span class="font-medium">💡 加权平均边际贡献: </span><span id="avgMargin" class="font-mono">0</span> 元/份
+                        <span class="ml-2 text-xs text-gray-500">(自然客户边际贡献高，广告客户扣除获客成本后边际贡献较低)</span>
+                    </div>
+                </div>
+
+                <!-- 利润-销量动态曲线图 -->
+                <div class="bg-white rounded-2xl shadow-md p-4">
+                    <div class="flex justify-between items-center mb-2 flex-wrap">
+                        <h3 class="font-bold flex items-center gap-2"><i class="fas fa-chart-line text-blue-500"></i> 利润随销量变化曲线</h3>
+                        <span class="text-xs text-slate-400">当前总销量处标注 ▼</span>
+                    </div>
+                    <canvas id="profitChart" width="400" height="200" style="max-height: 260px; width:100%"></canvas>
+                    <div class="text-xs text-center text-slate-400 mt-2">基于当前边际贡献率模拟 (自然+付费混合模型)</div>
+                </div>
+
+                <!-- 成本结构明细表 -->
+                <div class="bg-white rounded-2xl shadow-md p-5">
+                    <h3 class="font-bold flex items-center gap-2 mb-3"><i class="fas fa-receipt text-gray-600"></i> 月度损益明细 (合规成本全览)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                        <div class="flex justify-between py-1 border-b"><span>💰 课程销售收入</span><span class="font-medium" id="revDetail">¥0</span></div>
+                        <div class="flex justify-between py-1 border-b"><span>📢 广告总支出 (变动)</span><span class="font-medium text-rose-600" id="adCostDetail">¥0</span></div>
+                        <div class="flex justify-between py-1 border-b"><span>💳 平台手续费</span><span class="font-medium" id="feeDetail">¥0</span></div>
+                        <div class="flex justify-between py-1 border-b"><span>🏢 固定运营杂费</span><span class="font-medium" id="fixedDetail">¥0</span></div>
+                        <div class="flex justify-between py-1 border-b"><span>📉 增值税 (月收入≤10万免征)</span><span class="font-medium" id="vatDetail">¥0</span></div>
+                        <div class="flex justify-between py-1 border-b"><span>📑 企业所得税 (5% × 税前利润)</span><span class="font-medium" id="citDetail">¥0</span></div>
+                        <div class="flex justify-between py-1 border-b font-bold"><span>✅ 税后净利润</span><span class="font-bold" id="netDetail">¥0</span></div>
+                    </div>
+                    <div class="text-xs text-slate-400 mt-2 bg-slate-50 p-2 rounded">*增值税政策: 小规模纳税人月销售额≤10万元免税；超过10万元部分按1%征收。企业所得税按小微优惠税率5%计算。</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM 元素绑定
+        // 输入组件
+        const priceSlider = document.getElementById('coursePrice');
+        const priceNum = document.getElementById('priceNum');
+        const fixedSlider = document.getElementById('fixedCost');
+        const fixedNum = document.getElementById('fixedNum');
+        const cpaSlider = document.getElementById('cpa');
+        const cpaNum = document.getElementById('cpaNum');
+        const adBudgetSlider = document.getElementById('adBudget');
+        const adBudgetNum = document.getElementById('adBudgetNum');
+        const organicSlider = document.getElementById('organic');
+        const organicNum = document.getElementById('organicNum');
+        const txnFeeSlider = document.getElementById('txnFee');
+        const feeRateVal = document.getElementById('feeRateVal');
+
+        // 显示变量
+        const priceValSpan = document.getElementById('priceVal');
+        const fixedCostValSpan = document.getElementById('fixedCostVal');
+        const cpaValSpan = document.getElementById('cpaVal');
+        const adBudgetValSpan = document.getElementById('adBudgetVal');
+        const organicValSpan = document.getElementById('organicVal');
+        
+        // KPI
+        const totalSalesSpan = document.getElementById('totalSales');
+        const paidSalesSpan = document.getElementById('paidSales');
+        const organicSalesSpan = document.getElementById('organicSales');
+        const totalRevenueSpan = document.getElementById('totalRevenue');
+        const netProfitSpan = document.getElementById('netProfit');
+        const profitTrendSpan = document.getElementById('profitTrend');
+        const roiSpan = document.getElementById('roi');
+        const breakevenUnitsSpan = document.getElementById('breakevenUnits');
+        const safetyMarginDescSpan = document.getElementById('safetyMarginDesc');
+        const statusDiffSpan = document.getElementById('statusDiff');
+        const diffHintSpan = document.getElementById('diffHint');
+        const avgMarginSpan = document.getElementById('avgMargin');
+        
+        // 明细
+        const revDetail = document.getElementById('revDetail');
+        const adCostDetail = document.getElementById('adCostDetail');
+        const feeDetail = document.getElementById('feeDetail');
+        const fixedDetail = document.getElementById('fixedDetail');
+        const vatDetail = document.getElementById('vatDetail');
+        const citDetail = document.getElementById('citDetail');
+        const netDetail = document.getElementById('netDetail');
+        const vatDisplay = document.getElementById('vatDisplay');
+        const citDisplay = document.getElementById('citDisplay');
+
+        // 图表全局变量
+        let profitChart = null;
+
+        // 辅助函数：同步数值输入
+        function syncInputs() {
+            priceNum.value = priceSlider.value;
+            priceValSpan.innerText = priceSlider.value;
+            fixedNum.value = fixedSlider.value;
+            fixedCostValSpan.innerText = fixedSlider.value;
+            cpaNum.value = cpaSlider.value;
+            cpaValSpan.innerText = cpaSlider.value;
+            adBudgetNum.value = adBudgetSlider.value;
+            adBudgetValSpan.innerText = adBudgetSlider.value;
+            organicNum.value = organicSlider.value;
+            organicValSpan.innerText = organicSlider.value;
+            feeRateVal.innerText = txnFeeSlider.value + '%';
+        }
+
+        // 监听所有输入变化
+        const allInputs = [priceSlider, priceNum, fixedSlider, fixedNum, cpaSlider, cpaNum, adBudgetSlider, adBudgetNum, organicSlider, organicNum, txnFeeSlider];
+        function bindEvents() {
+            priceSlider.addEventListener('input', function() { priceNum.value = this.value; priceValSpan.innerText = this.value; refreshAll(); });
+            priceNum.addEventListener('input', function() { let v = parseFloat(this.value) || 399; v = Math.min(1499, Math.max(99, v)); priceSlider.value = v; priceValSpan.innerText = v; refreshAll(); });
+            fixedSlider.addEventListener('input', function() { fixedNum.value = this.value; fixedCostValSpan.innerText = this.value; refreshAll(); });
+            fixedNum.addEventListener('input', function() { let v = parseFloat(this.value) || 5000; v = Math.min(20000, Math.max(1000, v)); fixedSlider.value = v; fixedCostValSpan.innerText = v; refreshAll(); });
+            cpaSlider.addEventListener('input', function() { cpaNum.value = this.value; cpaValSpan.innerText = this.value; refreshAll(); });
+            cpaNum.addEventListener('input', function() { let v = parseFloat(this.value) || 50; v = Math.min(500, Math.max(10, v)); cpaSlider.value = v; cpaValSpan.innerText = v; refreshAll(); });
+            adBudgetSlider.addEventListener('input', function() { adBudgetNum.value = this.value; adBudgetValSpan.innerText = this.value; refreshAll(); });
+            adBudgetNum.addEventListener('input', function() { let v = parseFloat(this.value) || 3000; v = Math.min(20000, Math.max(0, v)); adBudgetSlider.value = v; adBudgetValSpan.innerText = v; refreshAll(); });
+            organicSlider.addEventListener('input', function() { organicNum.value = this.value; organicValSpan.innerText = this.value; refreshAll(); });
+            organicNum.addEventListener('input', function() { let v = parseFloat(this.value) || 15; v = Math.min(100, Math.max(0, v)); organicSlider.value = v; organicValSpan.innerText = v; refreshAll(); });
+            txnFeeSlider.addEventListener('input', function() { feeRateVal.innerText = this.value + '%'; refreshAll(); });
+        }
+
+        // 核心计算与刷新
+        function refreshAll() {
+            // 获取参数
+            let price = parseFloat(priceSlider.value);
+            let fixedCost = parseFloat(fixedSlider.value);
+            let cpa = parseFloat(cpaSlider.value);
+            let adBudget = parseFloat(adBudgetSlider.value);
+            let organicCustomers = parseFloat(organicSlider.value);
+            let txnFeeRate = parseFloat(txnFeeSlider.value) / 100;
+
+            // 付费广告带来的客户数量 (广告预算/单客成本，取整，不超过预算上限)
+            let paidCustomers = (cpa > 0 && adBudget > 0) ? Math.floor(adBudget / cpa) : 0;
+            let totalCustomers = paidCustomers + organicCustomers;
+            let revenue = totalCustomers * price;
+            
+            // 变动成本: 广告支出总额 (实际可能少于预算，但按实际获取客户花销)
+            let actualAdSpend = paidCustomers * cpa;
+            // 平台手续费: 按总收入比例
+            let txnFee = revenue * txnFeeRate;
+            
+            // 税前利润 (未扣除税费)
+            let profitBeforeTax = revenue - actualAdSpend - txnFee - fixedCost;
+            
+            // 增值税计算 (小规模纳税人月销售额≤10万免征，超过按1%征收)
+            let vat = 0;
+            if (revenue > 100000) {
+                vat = revenue * 0.01;   // 简化，全额1% (不考虑扣除)
+            } else {
+                vat = 0;
+            }
+            // 附加税简化忽略 (影响小)
+            // 企业所得税: 基于 (税前利润 - 增值税) ？ 通常企业所得税计算基数不含增值税，但利润表已扣减成本费用，增值税实际为价外税，此处简化：利润总额 = revenue - 所有成本费用(不含增值税) , 再扣增值税? 为精准：应纳税所得额 ≈ profitBeforeTax (因为增值税不影响损益，但实际缴纳时减少净利，我们模型在税前利润中尚未减增值税，因此调整:
+            let taxableIncome = profitBeforeTax - vat;   // 增值税实际支出减少净利润
+            let corporateIncomeTax = 0;
+            if (taxableIncome > 0) {
+                corporateIncomeTax = taxableIncome * 0.05;   // 小微企业优惠 5%
+            }
+            let netProfit = profitBeforeTax - vat - corporateIncomeTax;
+            
+            // 更新KPI展示
+            totalSalesSpan.innerText = totalCustomers;
+            paidSalesSpan.innerText = paidCustomers;
+            organicSalesSpan.innerText = organicCustomers;
+            totalRevenueSpan.innerText = '¥' + revenue.toFixed(0);
+            netProfitSpan.innerText = '¥' + netProfit.toFixed(0);
+            let profitColor = netProfit >= 0 ? 'profit-positive' : 'profit-negative';
+            netProfitSpan.className = `text-3xl font-bold ${profitColor}`;
+            profitTrendSpan.innerHTML = netProfit >=0 ? '<i class="fas fa-arrow-up text-green-500"></i> 盈利状态' : '<i class="fas fa-arrow-down text-red-500"></i> 亏损状态';
+            
+            let roi = actualAdSpend > 0 ? (netProfit / actualAdSpend) * 100 : (netProfit > 0 ? 999 : 0);
+            roiSpan.innerText = roi.toFixed(1) + '%';
+            
+            // 边际贡献加权平均 (用于盈亏平衡计算)
+            // 每份自然客户边际贡献 = price - txnFee (单价 - 手续费)
+            // 每份广告客户边际贡献 = price - cpa - txnFee
+            let marginOrganic = price - (price * txnFeeRate);
+            let marginPaid = price - cpa - (price * txnFeeRate);
+            let totalMargin = (organicCustomers * marginOrganic) + (paidCustomers * marginPaid);
+            let avgMargin = totalCustomers > 0 ? totalMargin / totalCustomers : 0;
+            avgMarginSpan.innerText = avgMargin.toFixed(1);
+            
+            // 盈亏平衡销量 = 固定成本 / 加权平均边际贡献 (需要重新计算不考虑已有广告组合，基于当前混合比例边际贡献推算达到盈亏平衡所需总销量)
+            let breakevenUnits = 0;
+            if (avgMargin > 0) {
+                breakevenUnits = Math.ceil(fixedCost / avgMargin);
+            } else {
+                breakevenUnits = Infinity;
+            }
+            breakevenUnitsSpan.innerText = (breakevenUnits === Infinity || breakevenUnits > 10000) ? '>10000' : breakevenUnits;
+            let safetyMargin = totalCustomers - breakevenUnits;
+            let safetyRate = totalCustomers > 0 ? (safetyMargin / totalCustomers) * 100 : 0;
+            if (breakevenUnits === Infinity) safetyMarginDescSpan.innerText = '边际贡献为负，无法保本';
+            else if (totalCustomers === 0) safetyMarginDescSpan.innerText = '暂无销量';
+            else safetyMarginDescSpan.innerText = `安全边际率 ${safetyRate.toFixed(1)}% (当前销量比保本点 ${safetyMargin >=0 ? '高'+safetyMargin : '低'+Math.abs(safetyMargin)}份)`;
+            
+            let diffMsg = '';
+            if (totalCustomers >= breakevenUnits && avgMargin > 0) {
+                statusDiffSpan.innerText = '✓ 已盈利';
+                diffHintSpan.innerText = `超出保本点 ${totalCustomers - breakevenUnits} 份`;
+                statusDiffSpan.className = "text-2xl font-bold text-green-600";
+            } else if (avgMargin <= 0) {
+                statusDiffSpan.innerText = '⚠️ 模型失效';
+                diffHintSpan.innerText = '边际贡献≤0，请降低获客成本/提高单价';
+                statusDiffSpan.className = "text-2xl font-bold text-red-500";
+            } else {
+                statusDiffSpan.innerText = '⚠️ 未盈利';
+                diffHintSpan.innerText = `距离保本还差 ${breakevenUnits - totalCustomers} 份`;
+                statusDiffSpan.className = "text-2xl font-bold text-orange-500";
+            }
+            
+            // 明细更新
+            revDetail.innerText = '¥' + revenue.toFixed(0);
+            adCostDetail.innerText = '¥' + actualAdSpend.toFixed(0);
+            feeDetail.innerText = '¥' + txnFee.toFixed(0);
+            fixedDetail.innerText = '¥' + fixedCost.toFixed(0);
+            vatDetail.innerText = '¥' + vat.toFixed(0);
+            citDetail.innerText = '¥' + corporateIncomeTax.toFixed(0);
+            netDetail.innerText = '¥' + netProfit.toFixed(0);
+            vatDisplay.innerText = '¥' + vat.toFixed(0) + (revenue > 100000 ? ' (1%税率)' : ' (免税)');
+            citDisplay.innerText = '¥' + corporateIncomeTax.toFixed(0);
+            
+            // 绘制利润-销量曲线图: 展示从0到 max(totalCustomers*1.8, breakevenUnits*1.2) 区间的利润曲线，基于当前加权平均边际贡献和固定成本
+            // 利润 = 销量 * avgMargin - fixedCost
+            let maxX = Math.max(totalCustomers, breakevenUnits, 20);
+            maxX = Math.ceil(maxX * 1.5);
+            if (maxX < 50) maxX = 80;
+            let labels = [];
+            let profitData = [];
+            for (let x = 0; x <= maxX; x += Math.ceil(maxX/30)) {
+                labels.push(x);
+                let profitVal = x * avgMargin - fixedCost;
+                profitData.push(profitVal);
+            }
+            if (profitChart) profitChart.destroy();
+            const ctx = document.getElementById('profitChart').getContext('2d');
+            profitChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '月度净利润 (元)',
+                            data: profitData,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59,130,246,0.05)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.2,
+                            pointRadius: 0,
+                            pointHoverRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        tooltip: { callbacks: { label: (ctx) => `净利润: ¥${ctx.raw.toFixed(0)}` } },
+                        legend: { position: 'top' },
+                        annotation: undefined
+                    },
+                    scales: {
+                        y: { title: { display: true, text: '净利润 (元)' }, grid: { color: '#e2e8f0' } },
+                        x: { title: { display: true, text: '月度总销量 (份)' } }
+                    }
+                }
+            });
+            // 标注当前销量位置 (手动添加注释简单使用div无法直接加，可用chartjs annotation? 简单起见不作额外库)
+            // 可选显示一个marker，但功能完好即可。
+        }
+        
+        // 监听所有数值
+        bindEvents();
+        syncInputs();
+        refreshAll();
+        
+        // 增加窗口自适应
+        window.addEventListener('resize', () => { if(profitChart) profitChart.resize(); });
+    </script>
+</body>
+</html>
