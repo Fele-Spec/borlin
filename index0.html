@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>直播合规课程 | 商业盈利预测模型</title>
+    <!-- 使用现代字体 & Chart.js CDN -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f4f7fc;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            padding: 2rem 1.5rem;
+            color: #1a2c3e;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* 头部说明卡片 */
+        .hero {
+            background: linear-gradient(135deg, #0B2B3F 0%, #12455f 100%);
+            color: white;
+            border-radius: 2rem;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.2);
+        }
+
+        .hero h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+            border-radius: 40px;
+            padding: 0.2rem 0.9rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            opacity: 0.85;
+            line-height: 1.5;
+            max-width: 85%;
+            font-size: 0.95rem;
+        }
+
+        .highlight-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.2rem;
+        }
+
+        .highlight-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 60px;
+            padding: 0.3rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* 控制面板卡片 */
+        .card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03), 0 2px 6px rgba(0,0,0,0.05);
+            padding: 1.5rem 1.8rem;
+            margin-bottom: 2rem;
+            transition: all 0.2s;
+            border: 1px solid #eef2f6;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-left: 4px solid #2c7da0;
+            padding-left: 1rem;
+            color: #1e4a6b;
+        }
+
+        .slider-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-item {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .input-item label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #2c5a74;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-item input {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 1px solid #cfdfe9;
+            border-radius: 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            background: #ffffff;
+            transition: 0.2s;
+        }
+
+        .input-item input:focus {
+            outline: none;
+            border-color: #2c7da0;
+            box-shadow: 0 0 0 3px rgba(44,125,160,0.1);
+        }
+
+        .input-range {
+            margin-top: 0.5rem;
+            width: 100%;
+            accent-color: #2c7da0;
+        }
+
+        .value-hint {
+            font-size: 0.75rem;
+            color: #5e7e97;
+            margin-top: 0.3rem;
+        }
+
+        /* KPI 卡片组 */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi {
+            background: #f9fbfd;
+            border-radius: 1.2rem;
+            padding: 1rem 1.2rem;
+            border: 1px solid #e6edf2;
+            transition: 0.1s;
+        }
+
+        .kpi-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            color: #5e7e97;
+        }
+
+        .kpi-value {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #0f3b4f;
+            line-height: 1.2;
+            margin-top: 0.3rem;
+            word-break: break-word;
+        }
+
+        .kpi-sub {
+            font-size: 0.7rem;
+            color: #6f8eaa;
+            margin-top: 0.3rem;
+        }
+
+        .profit-positive {
+            color: #1f8a4c;
+        }
+
+        .profit-negative {
+            color: #c2412c;
+        }
+
+        /* 表格样式 & 图表 */
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 780px) {
+            .two-columns {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .hero p {
+                max-width: 100%;
+            }
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .data-table td, .data-table th {
+            padding: 0.7rem 0.2rem;
+            border-bottom: 1px solid #e9edf2;
+        }
+
+        .data-table th {
+            text-align: left;
+            font-weight: 600;
+            color: #2c5a74;
+        }
+
+        .data-table td:last-child, .data-table th:last-child {
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .footnote {
+            font-size: 0.7rem;
+            color: #7a8e9e;
+            background: #f8fafc;
+            padding: 0.8rem 1rem;
+            border-radius: 1rem;
+            margin-top: 1rem;
+            border-left: 3px solid #cbdde9;
+        }
+
+        button {
+            background: none;
+            border: none;
+        }
+
+        canvas {
+            max-height: 280px;
+            width: 100%;
+        }
+
+        hr {
+            margin: 1rem 0;
+            border: none;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #7c94a8;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <div class="badge">🎓 一次性课程产出 · 10人线上轻团队</div>
+        <h1>📈 直播合规课程<br>商业盈利预测模型</h1>
+        <p>面向草根电商个体户 · 无实体办公 · 无重复研发工资 · 基于真实获客成本与税收优惠<br>动态测算每月净利润、保本招生人数及定价策略</p>
+        <div class="highlight-grid">
+            <span class="highlight-item">✅ 月固定杂费 ≈ 4,500元</span>
+            <span class="highlight-item">🎯 单学员可变成本 400元</span>
+            <span class="highlight-item">🧾 综合税负 4% (优惠后)</span>
+            <span class="highlight-item">📊 保本公式 P = (固定成本+400Q) / (0.96Q)</span>
+        </div>
+    </div>
+
+    <!-- 核心参数调节卡片 -->
+    <div class="card">
+        <div class="card-title">⚙️ 核心经营参数（可调节）</div>
+        <div class="slider-group">
+            <div class="input-item">
+                <label>💰 课程定价 (元/人)</label>
+                <input type="number" id="coursePrice" value="699" step="10" min="199" max="2500">
+                <input type="range" id="priceRange" min="199" max="2500" value="699" step="5" class="input-range">
+                <div class="value-hint">草根店主舒适区间：¥399~¥1299</div>
+            </div>
+            <div class="input-item">
+                <label>📢 月广告预算 (元)</label>
+                <input type="number" id="adBudget" value="3000" step="500" min="0" max="25000">
+                <input type="range" id="adRange" min="0" max="25000" value="3000" step="500" class="input-range">
+                <div class="value-hint">可为零，纯内容+私域裂变</div>
+            </div>
+            <div class="input-item">
+                <label>👥 月预计招生人数 (人)</label>
+                <input type="number" id="studentQty" value="35" step="1" min="0" max="300">
+                <input type="range" id="qtyRange" min="0" max="300" value="35" step="1" class="input-range">
+                <div class="value-hint">目标招生量影响总利润</div>
+            </div>
+        </div>
+        <div class="footnote" style="margin-top:0.5rem">
+            💡 模型假设：课程已一次性研发完成，不计人员工资；每月固定成本 = 运营杂费4,500元 + 广告预算；单学员可变成本 = 获客+支付+转介绍 ≈ 400元；综合税率按营收4%估算（增值税优惠+个税减半）。
+        </div>
+    </div>
+
+    <!-- KPI 关键指标 -->
+    <div class="kpi-grid" id="kpiContainer">
+        <!-- 动态js填充 -->
+    </div>
+
+    <!-- 图表与保本分析双栏 -->
+    <div class="two-columns">
+        <div class="card" style="padding:1.2rem;">
+            <div class="card-title" style="margin-bottom:0.8rem;">📉 利润 vs 招生人数</div>
+            <canvas id="profitChart" width="400" height="250" style="max-height:250px; width:100%"></canvas>
+            <div class="value-hint" style="margin-top: 0.8rem;">曲线基于当前定价 & 广告预算，展示不同招生量下的净利润变化</div>
+        </div>
+        <div class="card" style="padding:1.2rem;">
+            <div class="card-title" style="margin-bottom:0.8rem;">⚖️ 盈亏平衡分析</div>
+            <table class="data-table">
+                <tr><th>当前定价保本招生人数</th><td id="breakevenQty">—</td></tr>
+                <tr><th>当前招生量保本定价 (元)</th><td id="breakevenPrice">—</td></tr>
+                <tr><th>安全边际 (当前招生-保本)</th><td id="safetyMargin">—</td></tr>
+                <tr><th>每月固定成本 (杂费+广告)</th><td id="fixedCostShow">—</td></tr>
+                <tr><th>单学员综合贡献毛利*</th><td id="unitContribution">—</td></tr>
+            </table>
+            <div class="footnote" style="margin-top:1rem;">
+                * 贡献毛利 = 定价×(1-税率) - 可变成本400元，用于覆盖固定成本后产生利润。
+            </div>
+        </div>
+    </div>
+
+    <!-- 多情景速查表（不同广告预算下保本定价） -->
+    <div class="card">
+        <div class="card-title">📋 情景速查表 · 不同广告预算下的保本定价 (税率4%，V=400)</div>
+        <div style="overflow-x: auto;">
+            <table class="data-table" style="min-width:500px;">
+                <thead>
+                    <tr><th>月广告预算</th><th>月固定成本(总)</th><th>招生20人保本价</th><th>招生30人保本价</th><th>招生50人保本价</th><th>招生80人保本价</th></tr>
+                </thead>
+                <tbody id="scenarioTable">
+                    <!-- JS 动态生成 常见广告预算场景 -->
+                </tbody>
+            </table>
+        </div>
+        <div class="value-hint" style="margin-top:0.8rem;">注：保本价 = (固定成本 + 400×Q) / (Q × 0.96) ，可快速评估定价风险。</div>
+    </div>
+
+    <div class="footer">
+        🌱 模型基于真实草根电商培训获客数据 | 一次性课程成本不计入月支出 | 税收优惠已包含 (小规模+个体户减半) <br>
+        可变成本包含：广告获客+支付手续费+转介绍奖励，综合按400元/学员估算。
+    </div>
+</div>
+
+<script>
+    // 获取dom元素
+    const priceInput = document.getElementById('coursePrice');
+    const priceRange = document.getElementById('priceRange');
+    const adBudgetInput = document.getElementById('adBudget');
+    const adRange = document.getElementById('adRange');
+    const studentQtyInput = document.getElementById('studentQty');
+    const qtyRange = document.getElementById('qtyRange');
+
+    // 常量定义
+    const FIXED_BASE = 4500;      // 月运营杂费（不含广告）
+    const VAR_COST_PER_STUDENT = 400;   // 单学员可变成本
+    const TAX_RATE = 0.04;        // 综合税率4%
+
+    // 图表实例
+    let profitChart = null;
+
+    // 同步滑块+数字输入
+    function bindSync() {
+        priceRange.addEventListener('input', () => { priceInput.value = priceRange.value; updateAll(); });
+        priceInput.addEventListener('input', () => { let v = parseFloat(priceInput.value) || 699; priceRange.value = v; updateAll(); });
+        adRange.addEventListener('input', () => { adBudgetInput.value = adRange.value; updateAll(); });
+        adBudgetInput.addEventListener('input', () => { let v = parseFloat(adBudgetInput.value) || 0; adRange.value = v; updateAll(); });
+        qtyRange.addEventListener('input', () => { studentQtyInput.value = qtyRange.value; updateAll(); });
+        studentQtyInput.addEventListener('input', () => { let v = parseInt(studentQtyInput.value) || 0; qtyRange.value = v; updateAll(); });
+    }
+
+    // 计算核心财务指标
+    function computeMetrics(price, adBudget, qty) {
+        const fixedCost = FIXED_BASE + adBudget;    // 每月总固定成本
+        const revenue = price * qty;
+        const totalVarCost = VAR_COST_PER_STUDENT * qty;
+        const tax = revenue * TAX_RATE;
+        const profitBeforeTax = revenue - fixedCost - totalVarCost;
+        const netProfit = profitBeforeTax - tax;   // 税后净利润（实际上税已包含）
+        // 更精确：净利润 = revenue - fixedCost - totalVarCost - tax
+        // 利润率
+        const netMargin = revenue > 0 ? (netProfit / revenue) * 100 : 0;
+        return {
+            fixedCost,
+            revenue,
+            totalVarCost,
+            tax,
+            netProfit,
+            netMargin,
+            profitBeforeTax
+        };
+    }
+
+    // 保本招生人数 (给定定价P, 广告预算) : 求解 Q = 固定成本 / (P*(1-TAX_RATE) - VAR_COST_PER_STUDENT)
+    function breakevenQuantity(price, adBudget) {
+        const fixedCost = FIXED_BASE + adBudget;
+        const contributionPerUnit = price * (1 - TAX_RATE) - VAR_COST_PER_STUDENT;
+        if (contributionPerUnit <= 0) return Infinity;  // 永远无法保本
+        const beQ = fixedCost / contributionPerUnit;
+        return Math.ceil(beQ);
+    }
+
+    // 保本定价 (给定招生人数Q, 广告预算) : P = (固定成本 + VAR*Q) / (Q*(1-TAX_RATE))
+    function breakevenPriceGivenQty(qty, adBudget) {
+        if (qty <= 0) return Infinity;
+        const fixedCost = FIXED_BASE + adBudget;
+        const numerator = fixedCost + VAR_COST_PER_STUDENT * qty;
+        const denominator = qty * (1 - TAX_RATE);
+        return numerator / denominator;
+    }
+
+    // 更新所有UI以及图表
+    function updateAll() {
+        let price = parseFloat(priceInput.value);
+        let adBudget = parseFloat(adBudgetInput.value);
+        let qty = parseInt(studentQtyInput.value);
+
+        if (isNaN(price)) price = 699;
+        if (isNaN(adBudget)) adBudget = 0;
+        if (isNaN(qty)) qty = 0;
+        if (price < 0) price = 199;
+        if (adBudget < 0) adBudget = 0;
+        if (qty < 0) qty = 0;
+
+        const metrics = computeMetrics(price, adBudget, qty);
+        const beQ = breakevenQuantity(price, adBudget);
+        const bePrice = breakevenPriceGivenQty(qty, adBudget);
+        const safety = qty - beQ;
+        
+        // 更新KPI卡片
+        const kpiGrid = document.getElementById('kpiContainer');
+        kpiGrid.innerHTML = `
+            <div class="kpi"><div class="kpi-label">📆 月总收入</div><div class="kpi-value">¥ ${metrics.revenue.toFixed(0)}</div><div class="kpi-sub">定价 × 招生人数</div></div>
+            <div class="kpi"><div class="kpi-label">🏭 月固定成本</div><div class="kpi-value">¥ ${metrics.fixedCost.toFixed(0)}</div><div class="kpi-sub">杂费4,500 + 广告${adBudget}</div></div>
+            <div class="kpi"><div class="kpi-label">📦 月可变成本</div><div class="kpi-value">¥ ${metrics.totalVarCost.toFixed(0)}</div><div class="kpi-sub">400元/学员</div></div>
+            <div class="kpi"><div class="kpi-label">🧾 综合税费 (4%)</div><div class="kpi-value">¥ ${metrics.tax.toFixed(0)}</div><div class="kpi-sub">增值税+个税优惠后</div></div>
+            <div class="kpi"><div class="kpi-label">💰 月净利润</div><div class="kpi-value ${metrics.netProfit >= 0 ? 'profit-positive' : 'profit-negative'}">¥ ${metrics.netProfit.toFixed(0)}</div><div class="kpi-sub">税后净收益</div></div>
+            <div class="kpi"><div class="kpi-label">📈 净利润率</div><div class="kpi-value">${metrics.netMargin.toFixed(1)}%</div><div class="kpi-sub">${metrics.netProfit >= 0 ? '盈利' : '亏损'}</div></div>
+        `;
+
+        // 更新盈亏平衡表格内容
+        document.getElementById('breakevenQty').innerHTML = (beQ === Infinity || beQ > 5000) ? '>500 (定价过低无法保本)' : `${beQ} 人`;
+        document.getElementById('breakevenPrice').innerHTML = (bePrice === Infinity || bePrice > 10000) ? '定价过高或招生为0' : `¥ ${bePrice.toFixed(0)}`;
+        document.getElementById('safetyMargin').innerHTML = safety >= 0 ? `+${safety} 人` : `${safety} 人 (低于保本)`;
+        document.getElementById('fixedCostShow').innerHTML = `¥ ${metrics.fixedCost.toFixed(0)}`;
+        const contribution = price * (1 - TAX_RATE) - VAR_COST_PER_STUDENT;
+        document.getElementById('unitContribution').innerHTML = `¥ ${contribution.toFixed(2)} (覆盖固定成本)`;
+
+        // 更新图表: 利润随招生人数变化 (0~120范围, 或者动态max)
+        updateProfitChart(price, adBudget);
+        // 更新情景速查表
+        generateScenarioTable();
+    }
+
+    // 利润曲线图
+    function updateProfitChart(price, adBudget) {
+        const ctx = document.getElementById('profitChart').getContext('2d');
+        const maxQ = 140;   // 展示0~140人
+        const labels = [];
+        const profitData = [];
+        const fixedCost = FIXED_BASE + adBudget;
+        for (let q = 0; q <= maxQ; q += 5) {
+            const revenue = price * q;
+            const totalVar = VAR_COST_PER_STUDENT * q;
+            const tax = revenue * TAX_RATE;
+            const profit = revenue - fixedCost - totalVar - tax;
+            labels.push(q);
+            profitData.push(profit);
+        }
+        if (profitChart) {
+            profitChart.data.datasets[0].data = profitData;
+            profitChart.data.labels = labels;
+            profitChart.update();
+        } else {
+            profitChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `月净利润 (元) · 定价¥${price} 广告预算¥${adBudget}`,
+                        data: profitData,
+                        borderColor: '#2c7da0',
+                        backgroundColor: 'rgba(44,125,160,0.05)',
+                        borderWidth: 2.5,
+                        pointRadius: 1,
+                        pointHoverRadius: 5,
+                        tension: 0.2,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        tooltip: { callbacks: { label: (ctx) => `净利润: ¥${ctx.raw.toFixed(0)}` } },
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        y: { title: { display: true, text: '净利润 (元)', color: '#3e6b8c' }, beginAtZero: false, grid: { color: '#e2e8f0' } },
+                        x: { title: { display: true, text: '月招生人数 (人)', color: '#3e6b8c' } }
+                    }
+                }
+            });
+        }
+        // 更新图表标题中的定价广告信息 (简单处理)
+        if (profitChart) {
+            profitChart.data.datasets[0].label = `月净利润 · 定价¥${price} 广告¥${adBudget}`;
+            profitChart.update();
+        }
+    }
+
+    // 生成情景速查表: 常见广告预算档位
+    function generateScenarioTable() {
+        const adLevels = [0, 3000, 8000, 15000, 20000];
+        const qtyLevels = [20, 30, 50, 80];
+        const tbody = document.getElementById('scenarioTable');
+        tbody.innerHTML = '';
+        for (let ad of adLevels) {
+            const fixed = FIXED_BASE + ad;
+            const row = document.createElement('tr');
+            const adCell = document.createElement('td'); adCell.innerText = `¥${ad}`;
+            const fixedCell = document.createElement('td'); fixedCell.innerText = `¥${fixed}`;
+            row.appendChild(adCell);
+            row.appendChild(fixedCell);
+            for (let q of qtyLevels) {
+                const bePrice = (fixed + VAR_COST_PER_STUDENT * q) / (q * (1 - TAX_RATE));
+                const priceCell = document.createElement('td');
+                priceCell.innerText = bePrice > 0 ? `¥${Math.round(bePrice)}` : '—';
+                row.appendChild(priceCell);
+            }
+            tbody.appendChild(row);
+        }
+        // 增加一行说明头
+        const headerRow = document.querySelector('#scenarioTable')?.parentElement?.previousElementSibling;
+        // 无额外操作，样式已经由data-table控制
+    }
+
+    // 初始化加载时调用，同时添加事件监听
+    function init() {
+        bindSync();
+        updateAll();
+        // 窗口尺寸变化无碍
+        window.addEventListener('resize', () => {
+            if (profitChart) profitChart.resize();
+        });
+    }
+
+    init();
+</script>
+</body>
+</html>
