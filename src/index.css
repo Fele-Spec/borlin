@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border-color: #e2e8f0;
+  --card-bg: rgba(255, 255, 255, 0.85);
+}
+
+.dark {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --border-color: #334155;
+  --card-bg: rgba(30, 41, 59, 0.85);
+}
+
+:root {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@layer components {
+  .glass-card {
+    @apply rounded-2xl border border-white/20 backdrop-blur-md;
+    background-color: var(--card-bg);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  }
+
+  .gradient-primary {
+    @apply bg-gradient-to-r from-primary-600 to-primary-800;
+  }
+
+  .gradient-secondary {
+    @apply bg-gradient-to-r from-secondary-400 to-secondary-600;
+  }
+
+  .gradient-accent {
+    @apply bg-gradient-to-r from-accent-500 to-accent-600;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 rounded-lg font-medium text-white transition-all duration-200;
+    @apply bg-gradient-to-r from-primary-600 to-primary-700;
+    @apply hover:from-primary-700 hover:to-primary-800 hover:scale-[1.02];
+    @apply active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 rounded-lg font-medium text-white transition-all duration-200;
+    @apply bg-gradient-to-r from-secondary-500 to-secondary-600;
+    @apply hover:from-secondary-600 hover:to-secondary-700 hover:scale-[1.02];
+    @apply active:scale-[0.98];
+  }
+
+  .btn-accent {
+    @apply px-4 py-2 rounded-lg font-medium text-white transition-all duration-200;
+    @apply bg-gradient-to-r from-accent-500 to-accent-600;
+    @apply hover:from-accent-600 hover:to-accent-700 hover:scale-[1.02];
+    @apply active:scale-[0.98];
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-lg border outline-none transition-all duration-200;
+    @apply bg-white/50 dark:bg-slate-800/50;
+    @apply border-border-color text-text-primary;
+    @apply focus:border-secondary-500 focus:ring-2 focus:ring-secondary-500/30;
+  }
+
+  .section-title {
+    @apply font-heading font-semibold text-lg text-text-primary;
+  }
+
+  .status-indicator {
+    @apply inline-flex h-2.5 w-2.5 rounded-full;
+  }
+
+  .status-active {
+    @apply bg-green-500 animate-pulse;
+  }
+
+  .status-inactive {
+    @apply bg-slate-400;
+  }
+}
+
+@layer utilities {
+  .text-text-primary {
+    color: var(--text-primary);
+  }
+
+  .text-text-secondary {
+    color: var(--text-secondary);
+  }
+
+  .border-border-color {
+    border-color: var(--border-color);
+  }
+
+  .bg-bg-primary {
+    background-color: var(--bg-primary);
+  }
+
+  .bg-bg-secondary {
+    background-color: var(--bg-secondary);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
