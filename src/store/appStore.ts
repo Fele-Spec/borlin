@@ -2,15 +2,15 @@ import { create } from 'zustand';
 import { TranslationMode, Language, AvatarState, GestureDetection } from '../types';
 
 const defaultAvatar: AvatarState = {
-  id: 'default',
-  name: 'SignBot',
+  id: 'anya',
+  name: '阿尼亚',
   appearance: {
-    skinColor: '#f5d0b0',
-    hairColor: '#3d2914',
-    hairStyle: 'short',
-    eyeColor: '#4a4a4a',
-    clothing: 'casual',
-    clothingColor: '#2dd4bf',
+    skinColor: '#fce4d6',
+    hairColor: '#f8a5c2',
+    hairStyle: 'anya',
+    eyeColor: '#4caf50',
+    clothing: 'eden_uniform',
+    clothingColor: '#1a1a2e',
   },
   currentPose: 'idle',
   isAnimating: false,
